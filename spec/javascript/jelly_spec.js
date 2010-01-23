@@ -486,6 +486,74 @@ describe("Jelly.Page", function() {
       delete Jelly.Pages.all["DefinedComponent"];
     });
 
+    describe("when the passed-in controller name can be new'd", function() {
+
+      RandomNamespace = {}; // must be global
+      RandomNamespace.ConstructableComponent = function() {};
+
+      describe("when the actionName is defined", function() {
+        it("creates an instance of the object and invokes the page-specific method on the instance", function() {
+          var showCalled = false;
+          spyOn(RandomNamespace, 'ConstructableComponent').andCallFake(function() {
+            var fakeConstructedComponent = { show : function() {}};
+            spyOn(fakeConstructedComponent, "show").andCallFake(function() {showCalled = true});
+            return fakeConstructedComponent;
+          });
+          Jelly.Page.init("RandomNamespace.ConstructableComponent", "show");
+          expect(showCalled).toBeTruthy();
+        });
+
+        describe("when the 'all' method is defined", function() {
+          var invokedMethods;
+          beforeEach(function() {
+
+            invokedMethods = [];
+
+            spyOn(RandomNamespace, 'ConstructableComponent').andCallFake(function() {
+              var fakeConstructedComponent = { all : function() {}, show : function() {}};
+              spyOn(fakeConstructedComponent, "show").andCallFake(function() {invokedMethods.push("show")});
+              spyOn(fakeConstructedComponent, "all").andCallFake(function() {invokedMethods.push("all")});
+              return fakeConstructedComponent;
+            });
+          });
+
+          it("invokes the all method before invoking the page-specific method", function() {
+            expect(invokedMethods).toEqual([]);
+            Jelly.Page.init("RandomNamespace.ConstructableComponent", "show");
+            expect(invokedMethods).toEqual(['all', 'show']);
+          });
+        });
+      });
+
+      describe("when the actionName is not defined", function() {
+        it("does not blow up", function() {
+          spyOn(RandomNamespace, 'ConstructableComponent').andCallFake(function() {
+            return { };
+          });
+          Jelly.Page.init("RandomNamespace.ConstructableComponent", "easterBunny");
+        });
+
+        describe("when the 'all' method is defined", function() {
+
+          var invokedMethods;
+          beforeEach(function() {
+            invokedMethods = [];
+            spyOn(RandomNamespace, 'ConstructableComponent').andCallFake(function() {
+              var fakeConstructedComponent = { all : function() {} };
+              spyOn(fakeConstructedComponent, "all").andCallFake(function() {invokedMethods.push("all")});
+              return fakeConstructedComponent;
+            });
+          });
+
+          it("invokes the all method", function() {
+            expect(invokedMethods).toEqual([]);
+            Jelly.Page.init("RandomNamespace.ConstructableComponent", "easterBunny");
+            expect(invokedMethods).toEqual(['all']);
+          });
+        });
+      });
+    });
+
     describe("when the passed-in controllerName is defined", function() {
       describe("when the actionName is defined", function() {
         it("invokes the page-specific method", function() {

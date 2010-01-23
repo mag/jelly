@@ -131,20 +131,45 @@ $.extend(Jelly, {
   },
 
   Page: {
+
     init: function(controllerName, actionName) {
-      var page = Jelly.Pages.all[controllerName] || new Jelly.Page.Constructor(controllerName);
+      var page = Jelly.Page.resolvePage(controllerName)
       window.page = page;
       if (page.all) page.all();
       if (page[actionName]) page[actionName].call(page);
       page.loaded = true;
       return page;
     },
+
+    resolvePage: function(controllerName) {
+      var page = null;
+      if (Jelly.Pages.all[controllerName]) {
+        page = Jelly.Pages.all[controllerName];
+      } else if (Jelly.Page.findObjectOrNull(controllerName)) {
+        var pageConstructor = Jelly.Page.findObjectOrNull(controllerName);
+        page = new pageConstructor;
+      } else {
+        page = new Jelly.Page.Constructor(controllerName);
+      }
+      return page
+    },
+
     Constructor: function(name) {
       this.loaded = false;
       this.documentHref = Jelly.Location.documentHref;
 
       this.name = name;
       Jelly.Pages.all[name] = this;
+    },
+    
+    findObjectOrNull : function(objectString) {
+      var object = null;
+      try {
+        object = eval(objectString);
+      } catch(e) {
+        // ignored
+      }
+      return object;
     }
   },
 

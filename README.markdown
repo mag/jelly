@@ -108,6 +108,23 @@ specify an `all` function, which will be executed on all actions in the `Stories
 Notice the slightly different syntax for `new`. This is because `new` is a reserved word in Javascript.
 Create a separate file in `public/javascripts/pages` for each of your controllers as you use Jelly throughout your application.
 
+
+Auto-instantiated Jelly Objects (New)
+-------------------------------------
+
+Jelly can also create Pages and Components without using `Jelly.Pages.add`. All you need to do is make sure Jelly can
+find a Javascript constructor by the given name; Jelly will create the object using the constructor and call the action
+methods on the new object. The Javascript for above example can therefore be re-written like this:
+
+    Stories = function() {}
+
+    Stories.prototype.index = function() {
+      $('a.clickme').click(function() {
+        alert('Hello world!');
+      });
+    }
+
+
 Common Components
 -----------------
 
