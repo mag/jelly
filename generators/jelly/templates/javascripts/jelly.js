@@ -146,8 +146,7 @@ $.extend(Jelly, {
       if (Jelly.Pages.all[controllerName]) {
         page = Jelly.Pages.all[controllerName];
       } else if (Jelly.Page.findObjectOrNull(controllerName)) {
-        var pageConstructor = Jelly.Page.findObjectOrNull(controllerName);
-        page = new pageConstructor;
+        page = Jelly.Page.findObjectOrNull(controllerName);
       } else {
         page = new Jelly.Page.Constructor(controllerName);
       }
