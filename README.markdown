@@ -109,20 +109,20 @@ Notice the slightly different syntax for `new`. This is because `new` is a reser
 Create a separate file in `public/javascripts/pages` for each of your controllers as you use Jelly throughout your application.
 
 
-Auto-instantiated Jelly Objects (New)
+Global Variables as Jelly Objects (New)
 -------------------------------------
 
 Jelly can also create Pages and Components without using `Jelly.Pages.add`. All you need to do is make sure Jelly can
-find a Javascript constructor by the given name; Jelly will create the object using the constructor and call the action
-methods on the new object. The Javascript for above example can therefore be re-written like this:
+find a Javascript object by the given name; Jelly will use that object as the 'page' object and call the action
+methods on it. The Javascript for above example can therefore be re-written like this:
 
-    Stories = function() {}
+    var Stories = {};
 
-    Stories.prototype.index = function() {
+    Stories.index = function() {
       $('a.clickme').click(function() {
         alert('Hello world!');
       });
-    }
+    };
 
 
 Common Components
